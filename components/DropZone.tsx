@@ -81,8 +81,15 @@ export default function DropZone({ onScanComplete, onFileBlocked, onScanStart }:
       const uploadRes = await fetch("/api/scan-file", { method: "POST", body: uploadFormData });
       if (uploadRes.status === 429) throw new Error("Upload rate limit reached.");
       if (!uploadRes.ok) {
-        const errData = await uploadRes.json();
-        throw new Error(errData.error || "Upload failed.");
+        const errText = await uploadRes.text();
+        let errMsg = "Upload failed.";
+        try {
+          errMsg = JSON.parse(errText).error || errMsg;
+        } catch {
+          if (uploadRes.status === 413) errMsg = "File exceeds the maximum upload limit.";
+          else errMsg = `Upload failed (${uploadRes.status}): ${errText.substring(0, 50)}`;
+        }
+        throw new Error(errMsg);
       }
 
       const uploadData = await uploadRes.json();
