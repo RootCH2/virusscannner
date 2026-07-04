@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const maxDuration = 120; // Allow up to 2 minutes for large uploads
+
 export async function POST(request: Request) {
   const apiKey = process.env.VIRUSTOTAL_API_KEY;
 
@@ -12,12 +14,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // Limit check for Vercel Payload (4.5MB max payload size originally, increased to 150MB)
-    // 150MB = 157,286,400 bytes
     const MAX_SIZE = 150 * 1024 * 1024;
     if (file.size > MAX_SIZE) {
       return NextResponse.json(
-        { error: "File exceeds the 150MB proxy upload limit for serverless functions." },
+        { error: "File exceeds the 150MB upload limit." },
         { status: 413 }
       );
     }
@@ -27,9 +27,8 @@ export async function POST(request: Request) {
 
     if (!apiKey) {
       // Mock Demo Mode
-      // Create a stateless mock analysis ID by base64-encoding the file metadata
       const fileMeta = {
-        hash: clientHash || "da39a3ee5e6b4b0d3255bfef95601890afd80709", // fallback
+        hash: clientHash || "da39a3ee5e6b4b0d3255bfef95601890afd80709",
         fileName,
         fileSize,
         t: Date.now()
@@ -39,7 +38,6 @@ export async function POST(request: Request) {
       const base64Meta = Buffer.from(metaString).toString("base64url");
       const mockAnalysisId = `demo-analysis-${base64Meta}`;
 
-      // Simulate a small delay for upload network latency
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       return NextResponse.json({
@@ -50,12 +48,41 @@ export async function POST(request: Request) {
     }
 
     // Real VirusTotal API upload
+    const fileBytes = await file.arrayBuffer();
+    const fileBlob = new Blob([fileBytes], { type: file.type || "application/octet-stream" });
+
+    // Files > 32MB need a special upload URL from VirusTotal
+    const VT_LARGE_FILE_THRESHOLD = 32 * 1024 * 1024;
+    let uploadUrl = "https://www.virustotal.com/api/v3/files";
+
+    if (file.size > VT_LARGE_FILE_THRESHOLD) {
+      const urlRes = await fetch("https://www.virustotal.com/api/v3/files/upload_url", {
+        headers: { "x-apikey": apiKey },
+      });
+
+      if (urlRes.status === 429) {
+        return NextResponse.json(
+          { error: "VirusTotal API rate limit exceeded. Please try again later.", isRateLimit: true },
+          { status: 429 }
+        );
+      }
+
+      if (!urlRes.ok) {
+        const errText = await urlRes.text();
+        return NextResponse.json(
+          { error: `Failed to get VT upload URL: ${urlRes.statusText} - ${errText}` },
+          { status: urlRes.status }
+        );
+      }
+
+      const urlData = await urlRes.json();
+      uploadUrl = urlData.data;
+    }
+
     const vtFormData = new FormData();
-    // Convert File to Blob for standard fetch transmission
-    const fileBlob = new Blob([await file.arrayBuffer()], { type: file.type });
     vtFormData.append("file", fileBlob, file.name);
 
-    const vtResponse = await fetch("https://www.virustotal.com/api/v3/files", {
+    const vtResponse = await fetch(uploadUrl, {
       method: "POST",
       headers: {
         "x-apikey": apiKey
