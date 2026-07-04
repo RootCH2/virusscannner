@@ -62,7 +62,7 @@ export default function DropZone({ onScanComplete, onFileBlocked, onScanStart }:
         return;
       }
 
-      const MAX_PROXY_SIZE = 150 * 1024 * 1024;
+      const MAX_PROXY_SIZE = 5 * 1024 * 1024;
       if (file.size > MAX_PROXY_SIZE) {
         setTimeout(() => {
           onFileBlocked(file.name, file.size, hash);
@@ -230,7 +230,7 @@ export default function DropZone({ onScanComplete, onFileBlocked, onScanStart }:
             </div>
             <div>
               <p className="text-slate-300 font-semibold text-sm">Drop a file to scan</p>
-              <p className="text-slate-600 text-xs mt-0.5">or <span className="text-neon-blue font-semibold">browse files</span> · max 150MB upload</p>
+              <p className="text-slate-600 text-xs mt-0.5">or <span className="text-neon-blue font-semibold">browse files</span> · max 5MB upload</p>
             </div>
           </div>
         )}

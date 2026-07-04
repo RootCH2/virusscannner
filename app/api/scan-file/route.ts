@@ -14,10 +14,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    const MAX_SIZE = 150 * 1024 * 1024;
+    const MAX_SIZE = 5 * 1024 * 1024;
     if (file.size > MAX_SIZE) {
       return NextResponse.json(
-        { error: "File exceeds the 150MB upload limit." },
+        { error: "File exceeds the 5MB upload limit." },
         { status: 413 }
       );
     }
