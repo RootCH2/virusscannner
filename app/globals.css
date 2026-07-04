@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cyber-darker: #030712;
+  --color-cyber-bg: #050a18;
+  --color-cyber-card: #0a1628;
+  --color-cyber-card-hover: #111d35;
+  --color-cyber-border: #152040;
+  --color-neon-blue: #3b82f6;
+  --color-neon-blue-light: #60a5fa;
+  --color-neon-blue-glow: #2563eb;
+  --color-neon-emerald: #10b981;
+  --color-neon-crimson: #ef4444;
+  --color-neon-cyan: #38bdf8;
+
+  --animate-pulse-glow: pulse-glow 2.5s ease-in-out infinite alternate;
+  --animate-pulse-glow-crimson: pulse-glow-crimson 2s ease-in-out infinite alternate;
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.15), inset 0 0 5px rgba(59, 130, 246, 0.05); border-color: rgba(59, 130, 246, 0.2); }
+  100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), inset 0 0 10px rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.5); }
+}
+
+@keyframes pulse-glow-crimson {
+  0% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.2), inset 0 0 5px rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); }
+  100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4), inset 0 0 10px rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.6); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+:root {
+  color-scheme: dark;
+  --background: #050a18;
+  --foreground: #f1f5f9;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Glow text utilities */
+.text-glow-blue {
+  text-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+}
+.text-glow-crimson {
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+}
+.text-glow-emerald {
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #030712; }
+::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+/* Glass panel */
+.glass-panel {
+  background: rgba(10, 22, 40, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(21, 32, 64, 0.6);
+}
+
+/* Gradient border button */
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.25), 0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+.btn-primary:hover {
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.4), 0 4px 20px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-outline {
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.05);
+  transition: all 0.3s ease;
+}
+.btn-outline:hover {
+  border-color: rgba(59, 130, 246, 0.6);
+  background: rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
+}
+
+/* Decorative grid dots */
+.dot-grid {
+  background-image: radial-gradient(rgba(59, 130, 246, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
